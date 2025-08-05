@@ -4,7 +4,7 @@
 VERSION := 0.1.0
 SOURCE_FILE := json-to-table.go
 OUTPUT_NAME := json-to-table
-RELEASE_DIR := release
+DIST_DIR := dist
 MODULE_NAME := json-to-table
 
 # Font configuration
@@ -36,43 +36,45 @@ help:
 
 build: tidy
 	@echo "🚀 Starting build process for json-to-table..."
-	@rm -rf $(RELEASE_DIR)
-	@mkdir -p $(RELEASE_DIR)
+	@rm -rf $(DIST_DIR)
 	@$(MAKE) build-macos
 	@$(MAKE) build-windows
 	@$(MAKE) build-linux
 	@echo "\n✅ All builds completed successfully!"
-	@echo "   Binaries are located in the './$(RELEASE_DIR)' directory."
+	@echo "   Binaries are located in the './$(DIST_DIR)' directory."
 
 build-macos:
 	@echo "📦 Building for macOS (Universal)..."
-	@GOOS=darwin GOARCH=amd64 $(GO_BUILD) -o $(RELEASE_DIR)/$(OUTPUT_NAME)_amd64 $(SOURCE_FILE)
-	@GOOS=darwin GOARCH=arm64 $(GO_BUILD) -o $(RELEASE_DIR)/$(OUTPUT_NAME)_arm64 $(SOURCE_FILE)
-	@lipo -create -output $(RELEASE_DIR)/$(OUTPUT_NAME)_macos_universal $(RELEASE_DIR)/$(OUTPUT_NAME)_amd64 $(RELEASE_DIR)/$(OUTPUT_NAME)_arm64
-	@rm $(RELEASE_DIR)/$(OUTPUT_NAME)_amd64 $(RELEASE_DIR)/$(OUTPUT_NAME)_arm64
-	@echo "🍏 macOS build complete: ./$(RELEASE_DIR)/$(OUTPUT_NAME)_macos_universal"
+	@mkdir -p $(DIST_DIR)/macos
+	@GOOS=darwin GOARCH=amd64 $(GO_BUILD) -o $(DIST_DIR)/macos/$(OUTPUT_NAME)_amd64 $(SOURCE_FILE)
+	@GOOS=darwin GOARCH=arm64 $(GO_BUILD) -o $(DIST_DIR)/macos/$(OUTPUT_NAME)_arm64 $(SOURCE_FILE)
+	@lipo -create -output $(DIST_DIR)/macos/$(OUTPUT_NAME) $(DIST_DIR)/macos/$(OUTPUT_NAME)_amd64 $(DIST_DIR)/macos/$(OUTPUT_NAME)_arm64
+	@rm $(DIST_DIR)/macos/$(OUTPUT_NAME)_amd64 $(DIST_DIR)/macos/$(OUTPUT_NAME)_arm64
+	@echo "🍏 macOS build complete: ./$(DIST_DIR)/macos/$(OUTPUT_NAME)"
 
 build-windows:
 	@echo "📦 Building for Windows (amd64)..."
-	@GOOS=windows GOARCH=amd64 $(GO_BUILD) -o $(RELEASE_DIR)/$(OUTPUT_NAME)_windows_amd64.exe $(SOURCE_FILE)
-	@echo "🪟  Windows build complete: ./$(RELEASE_DIR)/$(OUTPUT_NAME)_windows_amd64.exe"
+	@mkdir -p $(DIST_DIR)/windows
+	@GOOS=windows GOARCH=amd64 $(GO_BUILD) -o $(DIST_DIR)/windows/$(OUTPUT_NAME).exe $(SOURCE_FILE)
+	@echo "🪟  Windows build complete: ./$(DIST_DIR)/windows/$(OUTPUT_NAME).exe"
 
 build-linux:
 	@echo "📦 Building for Linux (amd64)..."
-	@GOOS=linux GOARCH=amd64 $(GO_BUILD) -o $(RELEASE_DIR)/$(OUTPUT_NAME)_linux_amd64 $(SOURCE_FILE)
-	@echo "🐧 Linux build complete: ./$(RELEASE_DIR)/$(OUTPUT_NAME)_linux_amd64"
+	@mkdir -p $(DIST_DIR)/linux
+	@GOOS=linux GOARCH=amd64 $(GO_BUILD) -o $(DIST_DIR)/linux/$(OUTPUT_NAME) $(SOURCE_FILE)
+	@echo "🐧 Linux build complete: ./$(DIST_DIR)/linux/$(OUTPUT_NAME)"
 
 # --- Packaging ---
 
 package: build
 	@echo "📦 Packaging binaries for release..."
-	@cp $(FONT_LICENSE) $(RELEASE_DIR)/
-	@cd $(RELEASE_DIR) && \
-	zip -j $(OUTPUT_NAME)-v$(VERSION)-macos-universal.zip $(OUTPUT_NAME)_macos_universal $(FONT_LICENSE) && \
-	zip -j $(OUTPUT_NAME)-v$(VERSION)-windows-amd64.zip $(OUTPUT_NAME)_windows_amd64.exe $(FONT_LICENSE) && \
-	zip -j $(OUTPUT_NAME)-v$(VERSION)-linux-amd64.zip $(OUTPUT_NAME)_linux_amd64 $(FONT_LICENSE)
-	@rm $(RELEASE_DIR)/$(FONT_LICENSE)
-	@echo "\n✅ All packages created successfully in './$(RELEASE_DIR)' directory."
+	@cp $(FONT_LICENSE) $(DIST_DIR)/macos/
+	@cp $(FONT_LICENSE) $(DIST_DIR)/windows/
+	@cp $(FONT_LICENSE) $(DIST_DIR)/linux/
+	@cd $(DIST_DIR)/macos && zip ../$(OUTPUT_NAME)-v$(VERSION)-macos-universal.zip ./*
+	@cd $(DIST_DIR)/windows && zip ../$(OUTPUT_NAME)-v$(VERSION)-windows-amd64.zip ./*
+	@cd $(DIST_DIR)/linux && zip ../$(OUTPUT_NAME)-v$(VERSION)-linux-amd64.zip ./*
+	@echo "\n✅ All packages created successfully in './$(DIST_DIR)' directory."
 
 # --- Dependency Management ---
 
@@ -84,5 +86,5 @@ tidy:
 
 clean:
 	@echo "🧹 Cleaning up old builds..."
-	@rm -rf $(RELEASE_DIR)
+	@rm -rf $(DIST_DIR)
 	@echo "   > Cleanup complete."
