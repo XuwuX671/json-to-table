@@ -23,49 +23,83 @@ json-to-tableは、JSON配列を整形されたテーブルとして出力する
   * --font-sizeで文字の大きさを調整できます。  
 * **自己完結型**: 日本語フォントをバイナリに埋め込んでいるため、外部ファイルへの依存がなく、単一の実行可能ファイルとして動作します。
 
+## **インストール**
+
+macOS、Windows、Linux向けのコンパイル済みバイナリは[リリースページ](https://github.com/magifd2/json-to-table/releases)から入手できます。
+
 ## **使い方**
 
 ### **基本的なパイプライン**
 
 splunk-cliの出力をjqで絞り込み、その結果をjson-to-tableに渡すのが基本的な使い方です。
 
+```bash
 # splunk-cliの結果をテキスト形式のテーブルで表示  
 splunk-cli run --silent -spl "..." | jq .results | json-to-table
+```
 
 ### **出力形式の指定**
 
 --formatフラグで出力形式を変更できます。
 
 * **Markdown形式でファイルに出力:**  
+  ```bash
   splunk-cli run ... | jq .results | json-to-table --format md -o report.md
+  ```
 
 * **PNG画像形式でファイルに出力:**  
+  ```bash
   splunk-cli run ... | jq .results | json-to-table --format png --title "DNS Query Ranking" -o report.png
+  ```
 
-### **カラム順序の指定 (--columns or -c)**
+### **カラム順序の指定 (`--columns` or `-c`)**
 
 カンマ区切りでカラム名を指定します。ワイルドカードを使うことで、柔軟な順序指定が可能です。
 
 * **特定のカラムを先頭に、残りを後ろに表示:**  
+  ```bash
   ... | json-to-table -c "user,*"
+  ```
 
 * **特定のカラムを先頭と末尾に配置:**  
+  ```bash
   ... | json-to-table -c "user,*,count,total"
+  ```
 
-* プレフィックス（前方一致）でカラムをまとめる:  
+* **プレフィックス（前方一致）でカラムをまとめる:**  
   http_で始まるすべてのカラムをまとめて表示します。  
+  ```bash
   ... | json-to-table -c "user,http_*,*"
+  ```
 
 * **完全に指定した順序で、一部のカラムのみ表示:**  
+  ```bash
   ... | json-to-table -c "user,action,status"
+  ```
+
+## **ソースからのビルド**
+
+ソースからビルドするには、Goがインストールされている必要があります。ビルドスクリプトが必要なフォントの依存関係を自動的に処理します。
+
+1.  **リポジトリをクローン:**
+    ```bash
+    git clone https://github.com/magifd2/json-to-table.git
+    cd json-to-table
+    ```
+
+2.  **ビルドスクリプトを実行:**
+    ```bash
+    ./build.sh
+    ```
+    このスクリプトは、`Mplus1Code-Regular.ttf`フォントがまだ存在しない場合、自動的に`fonts`ディレクトリにダウンロードします。コンパイルされたバイナリは`dist_table`ディレクトリに配置されます。
 
 ## **フラグ一覧**
 
-* --format: 出力形式 (text, md, png)。デフォルトはtext。  
-* -o <file>: 出力先のファイルパス。デフォルトは標準出力。  
-* --columns, -c <order>: カラムの表示順序をカンマ区切りで指定。  
-* --title <text>: PNG出力時のタイトル。  
-* --font-size <number>: PNG出力時のフォントサイズ。デフォルトは12。
+* `--format`: 出力形式 (text, md, png)。デフォルトはtext。  
+* `-o <file>`: 出力先のファイルパス。デフォルトは標準出力。  
+* `--columns, -c <order>`: カラムの表示順序をカンマ区切りで指定。  
+* `--title <text>`: PNG出力時のタイトル。  
+* `--font-size <number>`: PNG出力時のフォントサイズ。デフォルトは12。
 
 ## **ライセンス**
 

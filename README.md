@@ -23,6 +23,10 @@ This project was collaboratively developed by **magifd2** and **Google's Gemini*
     *   Adjust the font size with `--font-size`.
 *   **Self-Contained**: Embeds a Japanese font within the binary, eliminating external dependencies and allowing it to run as a single executable file.
 
+## **Installation**
+
+Pre-compiled binaries for macOS, Windows, and Linux are available on the [Releases](https://github.com/magifd2/json-to-table/releases) page.
+
 ## **Usage**
 
 ### **Basic Pipeline**
@@ -72,6 +76,22 @@ Specify column names in a comma-separated list. Wildcards allow for flexible ord
     ```bash
     ... | json-to-table -c "user,action,status"
     ```
+
+## **Building from Source**
+
+To build the project from source, you need Go installed. The build script will automatically handle the required font dependency.
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/magifd2/json-to-table.git
+    cd json-to-table
+    ```
+
+2.  **Run the build script:**
+    ```bash
+    ./build.sh
+    ```
+    The script will automatically download the `Mplus1Code-Regular.ttf` font to the `fonts` directory if it's not already present. The compiled binaries will be placed in the `dist_table` directory.
 
 ## **Flags**
 

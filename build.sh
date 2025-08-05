@@ -11,8 +11,30 @@ echo "🚀 Starting build process for json-to-table..."
 # --- Configuration ---
 SOURCE_FILE="json-to-table.go"
 OUTPUT_NAME="json-to-table"
-DIST_DIR="dist_table" # Use a different dist directory to avoid conflicts
-MODULE_NAME="json-to-table" # Name for the go module
+DIST_DIR="dist_table"
+MODULE_NAME="json-to-table"
+FONT_DIR="fonts"
+FONT_FILE="Mplus1Code-Regular.ttf"
+FONT_URL="https://fonts.google.com/download?family=M%20PLUS%201%20Code"
+
+# --- Font Management ---
+echo "🖋️  Checking for font..."
+if [ ! -f "${FONT_DIR}/${FONT_FILE}" ]; then
+    echo "   > Font not found. Downloading and extracting..."
+    mkdir -p ${FONT_DIR}
+    # Download the zip file from Google Fonts
+    curl -s -L -o /tmp/mplus.zip "${FONT_URL}"
+    # Unzip and find the specific font file, then move it to the correct location
+    unzip -o /tmp/mplus.zip -d /tmp/mplus_unzipped
+    # The exact path might vary, so we search for it
+    find /tmp/mplus_unzipped -name "MPLUS1Code-Regular.ttf" -exec mv {} "${FONT_DIR}/${FONT_FILE}" \;
+    # Clean up temporary files
+    rm /tmp/mplus.zip
+    rm -rf /tmp/mplus_unzipped
+    echo "   > Font installed successfully."
+else
+    echo "   > Font already exists."
+fi
 
 # --- Dependency Management ---
 echo "📦 Managing dependencies..."
