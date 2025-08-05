@@ -6,15 +6,9 @@ SOURCE_FILE := json-to-table.go
 OUTPUT_NAME := json-to-table
 RELEASE_DIR := release
 MODULE_NAME := json-to-table
-TMP_DIR := .tmp
 
 # Font configuration
-FONT_DIR := fonts
-FONT_FILE := Mplus1Code-Regular.ttf
-FONT_PATH := $(FONT_DIR)/$(FONT_FILE)
 FONT_LICENSE := FONTS_LICENSE
-FONT_TAG := v2023.08.23
-FONT_URL := "https://github.com/coz-m/MPLUS_FONTS/archive/refs/tags/$(FONT_TAG).zip"
 
 # Go parameters
 GO := go
@@ -35,13 +29,12 @@ help:
 	@echo "  make build-macos  - Build for macOS (Universal)."
 	@echo "  make build-linux  - Build for Linux (amd64)."
 	@echo "  make build-windows- Build for Windows (amd64)."
-	@echo "  make font         - Download and prepare the font."
 	@echo "  make tidy         - Run go mod tidy."
-	@echo "  make clean        - Remove build artifacts and downloaded font."
+	@echo "  make clean        - Remove build artifacts."
 
 # --- Build Recipes ---
 
-build: tidy $(FONT_PATH)
+build: tidy
 	@echo "🚀 Starting build process for json-to-table..."
 	@rm -rf $(RELEASE_DIR)
 	@mkdir -p $(RELEASE_DIR)
@@ -51,7 +44,7 @@ build: tidy $(FONT_PATH)
 	@echo "\n✅ All builds completed successfully!"
 	@echo "   Binaries are located in the './$(RELEASE_DIR)' directory."
 
-build-macos: $(FONT_PATH)
+build-macos:
 	@echo "📦 Building for macOS (Universal)..."
 	@GOOS=darwin GOARCH=amd64 $(GO_BUILD) -o $(RELEASE_DIR)/$(OUTPUT_NAME)_amd64 $(SOURCE_FILE)
 	@GOOS=darwin GOARCH=arm64 $(GO_BUILD) -o $(RELEASE_DIR)/$(OUTPUT_NAME)_arm64 $(SOURCE_FILE)
@@ -59,12 +52,12 @@ build-macos: $(FONT_PATH)
 	@rm $(RELEASE_DIR)/$(OUTPUT_NAME)_amd64 $(RELEASE_DIR)/$(OUTPUT_NAME)_arm64
 	@echo "🍏 macOS build complete: ./$(RELEASE_DIR)/$(OUTPUT_NAME)_macos_universal"
 
-build-windows: $(FONT_PATH)
+build-windows:
 	@echo "📦 Building for Windows (amd64)..."
 	@GOOS=windows GOARCH=amd64 $(GO_BUILD) -o $(RELEASE_DIR)/$(OUTPUT_NAME)_windows_amd64.exe $(SOURCE_FILE)
 	@echo "🪟  Windows build complete: ./$(RELEASE_DIR)/$(OUTPUT_NAME)_windows_amd64.exe"
 
-build-linux: $(FONT_PATH)
+build-linux:
 	@echo "📦 Building for Linux (amd64)..."
 	@GOOS=linux GOARCH=amd64 $(GO_BUILD) -o $(RELEASE_DIR)/$(OUTPUT_NAME)_linux_amd64 $(SOURCE_FILE)
 	@echo "🐧 Linux build complete: ./$(RELEASE_DIR)/$(OUTPUT_NAME)_linux_amd64"
@@ -83,18 +76,6 @@ package: build
 
 # --- Dependency Management ---
 
-$(FONT_PATH):
-	@echo "🖋️  Font not found. Downloading source code zip and extracting..."
-	@mkdir -p $(FONT_DIR)
-	@mkdir -p $(TMP_DIR)
-	@curl -s -L -o $(TMP_DIR)/font_source.zip $(FONT_URL)
-	@unzip -o $(TMP_DIR)/font_source.zip -d $(TMP_DIR)/font_source_unzipped
-	@find $(TMP_DIR)/font_source_unzipped -name "$(FONT_FILE)" -exec mv {} $(FONT_PATH) \;
-	@rm -rf $(TMP_DIR)
-	@echo "   > Font installed successfully."
-
-font: $(FONT_PATH)
-
 tidy:
 	@echo "📦 Tidying dependencies..."
 	@$(GO_MOD_TIDY)
@@ -102,6 +83,6 @@ tidy:
 # --- Cleanup ---
 
 clean:
-	@echo "🧹 Cleaning up old builds, fonts, and temporary files..."
-	@rm -rf $(RELEASE_DIR) $(FONT_DIR) $(TMP_DIR)
+	@echo "🧹 Cleaning up old builds..."
+	@rm -rf $(RELEASE_DIR)
 	@echo "   > Cleanup complete."

@@ -79,7 +79,7 @@ Specify column names in a comma-separated list. Wildcards allow for flexible ord
 
 ## **Building from Source**
 
-To build the project from source, you need Go and `make` installed. The build process will automatically handle the required font dependency.
+To build the project from source, you need Go and `make` installed.
 
 1.  **Clone the repository:**
     ```bash

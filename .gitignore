@@ -37,8 +37,5 @@ go.work.sum
 # macOS specific files
 .DS_Store
 
-# Fonts (downloaded by build script)
-/fonts/
-
 # Temporary files
 .tmp/
