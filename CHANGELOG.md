@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Font handling: Mplus 1 Code font is now embedded directly in the repository.
 - READMEs updated to reflect new build process and HTML output.
 - Overview in READMEs clarified to state `splunk-cli` companion tool role.
+- Improved error handling with `%+v` formatting for better debuggability.
 
 ### Removed
 
@@ -33,3 +34,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Corrected `parseJSON` return value for empty data.
 - Resolved font download issues during build by embedding the font directly.
+- Fixed redundant 'v' prefix in release package filenames.

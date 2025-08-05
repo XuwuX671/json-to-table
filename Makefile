@@ -19,7 +19,7 @@ GO_BUILD := $(GO) build $(LDFLAGS)
 GO_MOD_TIDY := $(GO) mod tidy
 
 # Build targets
-.PHONY: all build clean tidy help package
+.PHONY: all build clean tidy help package vulncheck lint
 
 all: build
 
@@ -33,6 +33,8 @@ help:
 	@echo "  make build-windows- Build for Windows (amd64)."
 	@echo "  make tidy         - Run go mod tidy."
 	@echo "  make clean        - Remove build artifacts."
+	@echo "  make vulncheck    - Run vulnerability checks."
+	@echo "  make lint         - Run lint checks."
 
 # --- Build Recipes ---
 
@@ -77,6 +79,19 @@ package: build
 	@cd $(DIST_DIR)/windows && zip ../$(OUTPUT_NAME)-$(VERSION)-windows-amd64.zip ./*
 	@cd $(DIST_DIR)/linux && zip ../$(OUTPUT_NAME)-$(VERSION)-linux-amd64.zip ./*
 	@echo "\n✅ All packages created successfully in './$(DIST_DIR)' directory."
+
+# --- Code Quality ---
+
+vulncheck:
+	@echo "🔍 Running vulnerability checks..."
+	@$(GO) vet ./...
+	@govulncheck ./...
+	@echo "   > Vulnerability checks complete."
+
+lint:
+	@echo "🧹 Running lint checks..."
+	@golangci-lint run ./...
+	@echo "   > Lint checks complete."
 
 # --- Dependency Management ---
 
