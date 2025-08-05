@@ -13,10 +13,8 @@ FONT_DIR := fonts
 FONT_FILE := Mplus1Code-Regular.ttf
 FONT_PATH := $(FONT_DIR)/$(FONT_FILE)
 FONT_LICENSE := FONTS_LICENSE
-# Font source repository on GitHub
-FONT_REPO := coz-m/MPLUS_FONTS
 FONT_TAG := v2023.08.23
-FONT_ASSET_PATTERN := "mplus_web_fonts.zip"
+FONT_URL := "https://github.com/coz-m/MPLUS_FONTS/archive/refs/tags/$(FONT_TAG).zip"
 
 # Go parameters
 GO := go
@@ -86,14 +84,12 @@ package: build
 # --- Dependency Management ---
 
 $(FONT_PATH):
-	@echo "🖋️  Font not found. Downloading and extracting via gh-cli..."
+	@echo "🖋️  Font not found. Downloading source code zip and extracting..."
 	@mkdir -p $(FONT_DIR)
 	@mkdir -p $(TMP_DIR)
-	@echo "   > Downloading asset from $(FONT_REPO) at tag $(FONT_TAG)..."
-	@gh release download $(FONT_TAG) --repo $(FONT_REPO) --pattern $(FONT_ASSET_PATTERN) --dir $(TMP_DIR)
-	@echo "   > Extracting font..."
-	@unzip -o $(TMP_DIR)/mplus_web_fonts.zip -d $(TMP_DIR)/mplus_unzipped
-	@find $(TMP_DIR)/mplus_unzipped -name "$(FONT_FILE)" -exec mv {} $(FONT_PATH) \;
+	@curl -s -L -o $(TMP_DIR)/font_source.zip $(FONT_URL)
+	@unzip -o $(TMP_DIR)/font_source.zip -d $(TMP_DIR)/font_source_unzipped
+	@find $(TMP_DIR)/font_source_unzipped -name "$(FONT_FILE)" -exec mv {} $(FONT_PATH) \;
 	@rm -rf $(TMP_DIR)
 	@echo "   > Font installed successfully."
 
