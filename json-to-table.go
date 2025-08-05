@@ -25,6 +25,9 @@ import (
 //go:embed fonts/MPLUS1Code-Regular.ttf
 var fontData []byte
 
+// Version is set at build time using ldflags
+var version = "dev"
+
 // --- Core Logic ---
 
 // parseJSON reads JSON from an io.Reader and converts it into a table structure,
@@ -139,7 +142,7 @@ func renderAsText(table [][]string) (string, error) {
 		return "", nil
 	}
 	
-	colWidths := make([]int, len(table[0]))
+colWidths := make([]int, len(table[0]))
 	for _, row := range table {
 		for i, cell := range row {
 			width := 0
@@ -348,8 +351,14 @@ func main() {
 	fontSize := flag.Float64("font-size", 12, "Font size for the image output")
 	columns := flag.String("columns", "", "Comma-separated list of columns in desired order. Use '*' as a wildcard for other columns.")
 	flag.StringVar(columns, "c", "", "Shorthand for --columns")
+	versionFlag := flag.Bool("version", false, "Print version information and exit")
 
 	flag.Parse()
+
+	if *versionFlag {
+		fmt.Printf("json-to-table version %s\n", version)
+		os.Exit(0)
+	}
 
 	// Check if data is being piped
 	stat, _ := os.Stdin.Stat()

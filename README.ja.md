@@ -87,11 +87,17 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
     cd json-to-table
     ```
 
-2.  **ビルドの実行:**
+2.  **バイナリのビルド:**
     ```bash
     make build
     ```
-    ビルドプロセスは、`Mplus1Code-Regular.ttf`フォントがまだ存在しない場合、自動的にダウンロードします。コンパイルされたバイナリは`dist_table`ディレクトリに配置されます。
+    コンパイルされたバイナリは`release`ディレクトリに配置されます。
+
+3.  **リリース用パッケージ（ZIP）の作成:**
+    ```bash
+    make package
+    ```
+    各OS向けのZIPアーカイブが`release`ディレクトリに作成され、GitHubリリースにそのまま添付できます。
 
 ## **フラグ一覧**
 
@@ -100,6 +106,7 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
 * `--columns, -c <order>`: カラムの表示順序をカンマ区切りで指定。  
 * `--title <text>`: PNG出力時のタイトル。  
 * `--font-size <number>`: PNG出力時のフォントサイズ。デフォルトは12。
+* `--version`: バージョン情報を表示して終了します。
 
 ## **ライセンス**
 

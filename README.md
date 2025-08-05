@@ -87,11 +87,17 @@ To build the project from source, you need Go and `make` installed. The build pr
     cd json-to-table
     ```
 
-2.  **Run the build:**
+2.  **Build the binaries:**
     ```bash
     make build
     ```
-    The build process will automatically download the `Mplus1Code-Regular.ttf` font if it's not already present. The compiled binaries will be placed in the `dist_table` directory.
+    The compiled binaries will be placed in the `release` directory.
+
+3.  **Create release packages (ZIP):**
+    ```bash
+    make package
+    ```
+    This will create ZIP archives for each OS in the `release` directory, ready for a GitHub release.
 
 ## **Flags**
 
@@ -100,6 +106,7 @@ To build the project from source, you need Go and `make` installed. The build pr
 *   `--columns, -c <order>`: Comma-separated list of columns in the desired order.
 *   `--title <text>`: Title for the PNG output.
 *   `--font-size <number>`: Font size for the PNG output. Default is 12.
+*   `--version`: Print version information and exit.
 
 ## **License**
 
