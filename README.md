@@ -79,7 +79,7 @@ Specify column names in a comma-separated list. Wildcards allow for flexible ord
 
 ## **Building from Source**
 
-To build the project from source, you need Go installed. The build script will automatically handle the required font dependency.
+To build the project from source, you need Go and `make` installed. The build process will automatically handle the required font dependency.
 
 1.  **Clone the repository:**
     ```bash
@@ -87,11 +87,11 @@ To build the project from source, you need Go installed. The build script will a
     cd json-to-table
     ```
 
-2.  **Run the build script:**
+2.  **Run the build:**
     ```bash
-    ./build.sh
+    make build
     ```
-    The script will automatically download the `Mplus1Code-Regular.ttf` font to the `fonts` directory if it's not already present. The compiled binaries will be placed in the `dist_table` directory.
+    The build process will automatically download the `Mplus1Code-Regular.ttf` font if it's not already present. The compiled binaries will be placed in the `dist_table` directory.
 
 ## **Flags**
 
