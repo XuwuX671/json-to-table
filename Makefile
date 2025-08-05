@@ -1,7 +1,9 @@
 # Makefile for json-to-table
 
 # --- Configuration ---
-VERSION := 0.1.0
+# Dynamically get version from git tag, or default to 0.0.0-dev if no tags exist
+VERSION := $(shell git describe --tags --abbrev=0 2>/dev/null || echo "0.0.0-dev")
+
 SOURCE_FILE := json-to-table.go
 OUTPUT_NAME := json-to-table
 DIST_DIR := dist

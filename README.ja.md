@@ -8,6 +8,8 @@
 
 `json-to-table`は、[`magifd2/splunk-cli`](https://github.com/magifd2/splunk-cli) のコンパニオンツールとして開発された、Go言語製の汎用的なコマンドライン補助ツールです。JSON配列を整形されたテーブルとして出力します。標準入力からJSONデータを受け取るため、`splunk-cli ... | jq .results`のようなコマンドの出力を直接パイプして、人間に読みやすい形式や、レポートに貼り付けやすい画像形式に変換することを主な目的としています。
 
+変更点の詳細については、[CHANGELOG](CHANGELOG.md)をご覧ください。
+
 ### **主な機能**
 
 * **汎用的な入力**: 標準入力から、オブジェクトのJSON配列を受け取ります。  
@@ -56,31 +58,6 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
 * **HTML形式でファイルに出力:**  
   ```bash
   splunk-cli run ... | jq .results | json-to-table --format html -o report.html
-  ```
-
-### **カラム順序の指定 (`--columns` or `-c`)**
-
-カンマ区切りでカラム名を指定します。ワイルドカードを使うことで、柔軟な順序指定が可能です。
-
-* **特定のカラムを先頭に、残りを後ろに表示:**  
-  ```bash
-  ... | json-to-table -c "user,*"
-  ```
-
-* **特定のカラムを先頭と末尾に配置:**  
-  ```bash
-  ... | json-to-table -c "user,*,count,total"
-  ```
-
-* **プレフィックス（前方一致）でカラムをまとめる:**  
-  http_で始まるすべてのカラムをまとめて表示します。  
-  ```bash
-  ... | json-to-table -c "user,http_*,*"
-  ```
-
-* **完全に指定した順序で、一部のカラムのみ表示:**  
-  ```bash
-  ... | json-to-table -c "user,action,status"
   ```
 
 ## **ソースからのビルド**
