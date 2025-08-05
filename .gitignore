@@ -39,3 +39,6 @@ go.work.sum
 
 # Fonts (downloaded by build script)
 /fonts/
+
+# Temporary files
+.tmp/

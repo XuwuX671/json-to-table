@@ -6,6 +6,7 @@ SOURCE_FILE := json-to-table.go
 OUTPUT_NAME := json-to-table
 RELEASE_DIR := release
 MODULE_NAME := json-to-table
+TMP_DIR := .tmp
 
 # Font configuration
 FONT_DIR := fonts
@@ -84,11 +85,11 @@ package: build
 $(FONT_PATH):
 	@echo "🖋️  Font not found. Downloading and extracting..."
 	@mkdir -p $(FONT_DIR)
-	@curl -s -L -o /tmp/mplus.zip $(FONT_URL)
-	@unzip -o /tmp/mplus.zip -d /tmp/mplus_unzipped
-	@find /tmp/mplus_unzipped -name "MPLUS1Code-Regular.ttf" -exec mv {} $(FONT_PATH) \;
-	@rm /tmp/mplus.zip
-	@rm -rf /tmp/mplus_unzipped
+	@mkdir -p $(TMP_DIR)
+	@curl -s -L -o $(TMP_DIR)/mplus.zip $(FONT_URL)
+	@unzip -o $(TMP_DIR)/mplus.zip -d $(TMP_DIR)/mplus_unzipped
+	@find $(TMP_DIR)/mplus_unzipped -name "MPLUS1Code-Regular.ttf" -exec mv {} $(FONT_PATH) \;
+	@rm -rf $(TMP_DIR)
 	@echo "   > Font installed successfully."
 
 font: $(FONT_PATH)
@@ -100,6 +101,6 @@ tidy:
 # --- Cleanup ---
 
 clean:
-	@echo "🧹 Cleaning up old builds and fonts..."
-	@rm -rf $(RELEASE_DIR) $(FONT_DIR)
+	@echo "🧹 Cleaning up old builds, fonts, and temporary files..."
+	@rm -rf $(RELEASE_DIR) $(FONT_DIR) $(TMP_DIR)
 	@echo "   > Cleanup complete."
