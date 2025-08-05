@@ -402,7 +402,7 @@ func main() {
 
 	table, err := parseJSON(os.Stdin, *columns)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error parsing JSON: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error parsing JSON: %+v\n", err)
 		os.Exit(1)
 	}
 
@@ -423,7 +423,7 @@ func main() {
 	}
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error rendering output: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error rendering output: %+v\n", err)
 		os.Exit(1)
 	}
 
@@ -432,7 +432,7 @@ func main() {
 	if *output != "" {
 		file, err := os.Create(*output)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Error creating output file: %v\n", err)
+			fmt.Fprintf(os.Stderr, "Error creating output file: %+v\n", err)
 			os.Exit(1)
 		}
 		defer file.Close()
@@ -446,7 +446,7 @@ func main() {
 		_, err = io.WriteString(writer, outStr)
 	}
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error writing output: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Error writing output: %+v\n", err)
 		os.Exit(1)
 	}
 }
