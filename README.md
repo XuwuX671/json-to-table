@@ -6,7 +6,7 @@ This project was collaboratively developed by **magifd2** and **Google's Gemini*
 
 ## **Overview**
 
-`json-to-table` is a versatile command-line utility written in Go that formats a JSON array into a well-structured table. It reads JSON data from standard input, making it ideal for directly piping the output of commands like `splunk-cli ... | jq .results` to convert it into a human-readable format or an image suitable for reports.
+`json-to-table` is a versatile command-line utility written in Go, designed as a companion tool for [`magifd2/splunk-cli`](https://github.com/magifd2/splunk-cli). It formats a JSON array into a well-structured table. It reads JSON data from standard input, making it ideal for directly piping the output of commands like `splunk-cli ... | jq .results` to convert it into a human-readable format or an image suitable for reports.
 
 ### **Key Features**
 
