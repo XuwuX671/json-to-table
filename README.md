@@ -1,64 +1,90 @@
 # **JSON to Table (json-to-table)**
 
-## **概要**
+This project was collaboratively developed by **magifd2** and **Google's Gemini**.
 
-json-to-tableは、JSON配列を整形されたテーブルとして出力するための、Go言語で書かれた汎用的なコマンドライン補助ツールです。標準入力からJSONデータを受け取るため、splunk-cli ... | jq .resultsのようなコマンドの出力を直接パイプして、人間に読みやすい形式や、レポートに貼り付けやすい画像形式に変換することを主な目的としています。
+[日本語のREADMEはこちら](README.ja.md)
 
-### **主な機能**
+## **Overview**
 
-* **汎用的な入力**: 標準入力から、オブジェクトのJSON配列を受け取ります。  
-* **多彩な出力形式**:  
-  * text: ターミナル表示に適した、罫線付きのプレーンテキスト形式。  
-  * md: GitHub Flavored Markdown形式のテーブル。  
-  * png: **日本語対応の画像形式**。レポートやチャットでの共有に最適です。  
-* **柔軟なカラム順序指定**:  
-  * --columns (-c) フラグで、表示するカラムとその順序を自由に指定できます。  
-  * *（残りすべて）やprefix*（前方一致）といった強力なワイルドカードをサポートします。  
-* **画像カスタマイズ**:  
-  * --titleで画像にタイトルを追加できます。  
-  * --font-sizeで文字の大きさを調整できます。  
-* **自己完結型**: 日本語フォントをバイナリに埋め込んでいるため、外部ファイルへの依存がなく、単一の実行可能ファイルとして動作します。
+`json-to-table` is a versatile command-line utility written in Go that formats a JSON array into a well-structured table. It reads JSON data from standard input, making it ideal for directly piping the output of commands like `splunk-cli ... | jq .results` to convert it into a human-readable format or an image suitable for reports.
 
-## **使い方**
+### **Key Features**
 
-### **基本的なパイプライン**
+*   **Versatile Input**: Accepts a JSON array of objects from standard input.
+*   **Multiple Output Formats**:
+    *   `text`: Plain text with borders, suitable for terminal display.
+    *   `md`: GitHub Flavored Markdown table.
+    *   `png`: **Image format with Japanese font support**, perfect for sharing in reports or chat.
+*   **Flexible Column Ordering**:
+    *   Specify the columns to display and their order using the `--columns` (`-c`) flag.
+    *   Supports powerful wildcards like `*` (for all remaining columns) and `prefix*` (for prefix matching).
+*   **Image Customization**:
+    *   Add a title to the image with `--title`.
+    *   Adjust the font size with `--font-size`.
+*   **Self-Contained**: Embeds a Japanese font within the binary, eliminating external dependencies and allowing it to run as a single executable file.
 
-splunk-cliの出力をjqで絞り込み、その結果をjson-to-tableに渡すのが基本的な使い方です。
+## **Usage**
 
-# splunk-cliの結果をテキスト形式のテーブルで表示  
+### **Basic Pipeline**
+
+The primary use case is to filter the output of `splunk-cli` with `jq` and pipe the result to `json-to-table`.
+
+```bash
+# Display splunk-cli results as a text table
 splunk-cli run --silent -spl "..." | jq .results | json-to-table
+```
 
-### **出力形式の指定**
+### **Specifying Output Format**
 
---formatフラグで出力形式を変更できます。
+Use the `--format` flag to change the output format.
 
-* **Markdown形式でファイルに出力:**  
-  splunk-cli run ... | jq .results | json-to-table --format md -o report.md
+*   **Output as a Markdown file:**
+    ```bash
+    splunk-cli run ... | jq .results | json-to-table --format md -o report.md
+    ```
 
-* **PNG画像形式でファイルに出力:**  
-  splunk-cli run ... | jq .results | json-to-table --format png --title "DNS Query Ranking" -o report.png
+*   **Output as a PNG image file:**
+    ```bash
+    splunk-cli run ... | jq .results | json-to-table --format png --title "DNS Query Ranking" -o report.png
+    ```
 
-### **カラム順序の指定 (--columns or -c)**
+### **Specifying Column Order (`--columns` or `-c`)**
 
-カンマ区切りでカラム名を指定します。ワイルドカードを使うことで、柔軟な順序指定が可能です。
+Specify column names in a comma-separated list. Wildcards allow for flexible ordering.
 
-* **特定のカラムを先頭に、残りを後ろに表示:**  
-  ... | json-to-table -c "user,*"
+*   **Bring specific columns to the front, with the rest following:**
+    ```bash
+    ... | json-to-table -c "user,*"
+    ```
 
-* **特定のカラムを先頭と末尾に配置:**  
-  ... | json-to-table -c "user,*,count,total"
+*   **Place specific columns at the beginning and end:**
+    ```bash
+    ... | json-to-table -c "user,*,count,total"
+    ```
 
-* プレフィックス（前方一致）でカラムをまとめる:  
-  http_で始まるすべてのカラムをまとめて表示します。  
-  ... | json-to-table -c "user,http_*,*"
+*   **Group columns by prefix:**
+    Displays all columns starting with `http_` together.
+    ```bash
+    ... | json-to-table -c "user,http_*,*"
+    ```
 
-* **完全に指定した順序で、一部のカラムのみ表示:**  
-  ... | json-to-table -c "user,action,status"
+*   **Display only a specific set of columns in a defined order:**
+    ```bash
+    ... | json-to-table -c "user,action,status"
+    ```
 
-## **フラグ一覧**
+## **Flags**
 
-* --format: 出力形式 (text, md, png)。デフォルトはtext。  
-* -o <file>: 出力先のファイルパス。デフォルトは標準出力。  
-* --columns, -c <order>: カラムの表示順序をカンマ区切りで指定。  
-* --title <text>: PNG出力時のタイトル。  
-* --font-size <number>: PNG出力時のフォントサイズ。デフォルトは12。
+*   `--format`: Output format (`text`, `md`, `png`). Default is `text`.
+*   `-o <file>`: Output file path. Default is standard output.
+*   `--columns, -c <order>`: Comma-separated list of columns in the desired order.
+*   `--title <text>`: Title for the PNG output.
+*   `--font-size <number>`: Font size for the PNG output. Default is 12.
+
+## **License**
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## **Author**
+
+[magifd2](https://github.com/magifd2)
