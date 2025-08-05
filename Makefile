@@ -12,7 +12,7 @@ FONT_DIR := fonts
 FONT_FILE := Mplus1Code-Regular.ttf
 FONT_PATH := $(FONT_DIR)/$(FONT_FILE)
 FONT_LICENSE := FONTS_LICENSE
-FONT_URL := "https://fonts.google.com/download?family=M%20PLUS%201%20Code"
+FONT_URL := "https://github.com/coz-m/MPLUS_FONTS/releases/download/v2023.08.23/mplus_web_fonts.zip"
 
 # Go parameters
 GO := go
