@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>JSON to Table Output</title>
+<style>
+  body { font-family: sans-serif; margin: 20px; }
+  table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+  th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+  th { background-color: #f2f2f2; }
+  tr:nth-child(even) { background-color: #f9f9f9; }
+  tr:hover { background-color: #f1f1f1; }
+</style>
+</head>
+<body>
+
+<table>
+  <thead>
+    <tr>
+      {{range .Headers}}<th>{{.}}</th>{{end}}
+    </tr>
+  </thead>
+  <tbody>
+    {{range .Rows}}
+    <tr>
+      {{range .}}<td>{{.}}</td>{{end}}
+    </tr>
+    {{end}}
+  </tbody>
+</table>
+
+</body>
+</html>

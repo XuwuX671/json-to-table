@@ -15,6 +15,7 @@ This project was collaboratively developed by **magifd2** and **Google's Gemini*
     *   `text`: Plain text with borders, suitable for terminal display.
     *   `md`: GitHub Flavored Markdown table.
     *   `png`: **Image format with Japanese font support**, perfect for sharing in reports or chat.
+    *   `html`: Self-contained HTML file with basic styling.
 *   **Flexible Column Ordering**:
     *   Specify the columns to display and their order using the `--columns` (`-c`) flag.
     *   Supports powerful wildcards like `*` (for all remaining columns) and `prefix*` (for prefix matching).
@@ -50,6 +51,11 @@ Use the `--format` flag to change the output format.
 *   **Output as a PNG image file:**
     ```bash
     splunk-cli run ... | jq .results | json-to-table --format png --title "DNS Query Ranking" -o report.png
+    ```
+
+*   **Output as an HTML file:**
+    ```bash
+    splunk-cli run ... | jq .results | json-to-table --format html -o report.html
     ```
 
 ### **Specifying Column Order (`--columns` or `-c`)**
@@ -101,7 +107,7 @@ To build the project from source, you need Go and `make` installed.
 
 ## **Flags**
 
-*   `--format`: Output format (`text`, `md`, `png`). Default is `text`.
+*   `--format`: Output format (`text`, `md`, `png`, `html`). Default is `text`.
 *   `-o <file>`: Output file path. Default is standard output.
 *   `--columns, -c <order>`: Comma-separated list of columns in the desired order.
 *   `--title <text>`: Title for the PNG output.

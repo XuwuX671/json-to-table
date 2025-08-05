@@ -6,6 +6,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"html/template"
 	"image"
 	"image/color"
 	"image/draw"
@@ -24,6 +25,9 @@ import (
 
 //go:embed fonts/MPLUS1Code-Regular.ttf
 var fontData []byte
+
+//go:embed templates/html_table.html
+var htmlTemplateContent string
 
 // Version is set at build time using ldflags
 var version = "dev"
@@ -342,10 +346,37 @@ func renderAsPNG(table [][]string, title string, fontSize float64) ([]byte, erro
 	return buf.Bytes(), nil
 }
 
+// renderAsHTML formats the table as an HTML table with basic styling.
+func renderAsHTML(table [][]string) (string, error) {
+	if len(table) == 0 {
+		return "", nil
+	}
+
+	parsedTemplate, err := template.New("html_table").Parse(htmlTemplateContent)
+	if err != nil {
+		return "", fmt.Errorf("failed to parse html template: %w", err)
+	}
+
+	data := struct {
+		Headers []string
+		Rows    [][]string
+	}{
+		Headers: table[0],
+		Rows:    table[1:],
+	}
+
+	var buf bytes.Buffer
+	if err := parsedTemplate.Execute(&buf, data); err != nil {
+		return "", fmt.Errorf("failed to execute html template: %w", err)
+	}
+
+	return buf.String(), nil
+}
+
 // --- Main Execution ---
 
 func main() {
-	format := flag.String("format", "text", "Output format: text, md, png")
+	format := flag.String("format", "text", "Output format: text, md, png, html")
 	output := flag.String("o", "", "Output file path (default: stdout)")
 	title := flag.String("title", "", "Title for the image output")
 	fontSize := flag.Float64("font-size", 12, "Font size for the image output")
@@ -385,6 +416,8 @@ func main() {
 		outStr, err = renderAsMarkdown(table)
 	case "png":
 		outData, err = renderAsPNG(table, *title, *fontSize)
+	case "html":
+		outStr, err = renderAsHTML(table)
 	default:
 		err = fmt.Errorf("unknown format: %s", *format)
 	}

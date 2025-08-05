@@ -15,6 +15,7 @@
   * text: ターミナル表示に適した、罫線付きのプレーンテキスト形式。  
   * md: GitHub Flavored Markdown形式のテーブル。  
   * png: **日本語対応の画像形式**。レポートやチャットでの共有に最適です。  
+  * html: 基本的なスタイルが適用された自己完結型のHTMLファイル。
 * **柔軟なカラム順序指定**:  
   * --columns (-c) フラグで、表示するカラムとその順序を自由に指定できます。  
   * *（残りすべて）やprefix*（前方一致）といった強力なワイルドカードをサポートします。  
@@ -50,6 +51,11 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
 * **PNG画像形式でファイルに出力:**  
   ```bash
   splunk-cli run ... | jq .results | json-to-table --format png --title "DNS Query Ranking" -o report.png
+  ```
+
+* **HTML形式でファイルに出力:**  
+  ```bash
+  splunk-cli run ... | jq .results | json-to-table --format html -o report.html
   ```
 
 ### **カラム順序の指定 (`--columns` or `-c`)**
@@ -93,7 +99,7 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
     ```
     コンパイルされたバイナリは`release`ディレクトリに配置されます。
 
-3.  **リリース用パッケージ（ZIP）の作成:**
+3.  **リリース用パッケージ（ZIP）の作成:**  
     ```bash
     make package
     ```
@@ -101,7 +107,7 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
 
 ## **フラグ一覧**
 
-* `--format`: 出力形式 (text, md, png)。デフォルトはtext。  
+* `--format`: 出力形式 (text, md, png, html)。デフォルトはtext。  
 * `-o <file>`: 出力先のファイルパス。デフォルトは標準出力。  
 * `--columns, -c <order>`: カラムの表示順序をカンマ区切りで指定。  
 * `--title <text>`: PNG出力時のタイトル。  
