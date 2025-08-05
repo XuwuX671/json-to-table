@@ -108,6 +108,10 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
 * `--font-size <number>`: PNG出力時のフォントサイズ。デフォルトは12。
 * `--version`: バージョン情報を表示して終了します。
 
+## **謝辞**
+
+このツールは **Mplus 1 Code** フォントを使用しています。このフォントは、SIL Open Font License, Version 1.1 のもとでライセンスされています。素晴らしいフォントを提供してくださった M+ FONTS Project に感謝します。
+
 ## **ライセンス**
 
 このプロジェクトはMITライセンスのもとで公開されています。詳細は[LICENSE](LICENSE)ファイルをご覧ください。

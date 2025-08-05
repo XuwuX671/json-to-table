@@ -11,6 +11,7 @@ MODULE_NAME := json-to-table
 FONT_DIR := fonts
 FONT_FILE := Mplus1Code-Regular.ttf
 FONT_PATH := $(FONT_DIR)/$(FONT_FILE)
+FONT_LICENSE := FONTS_LICENSE
 FONT_URL := "https://fonts.google.com/download?family=M%20PLUS%201%20Code"
 
 # Go parameters
@@ -70,10 +71,12 @@ build-linux: $(FONT_PATH)
 
 package: build
 	@echo "📦 Packaging binaries for release..."
+	@cp $(FONT_LICENSE) $(RELEASE_DIR)/
 	@cd $(RELEASE_DIR) && \
-	zip -j $(OUTPUT_NAME)-v$(VERSION)-macos-universal.zip $(OUTPUT_NAME)_macos_universal && \
-	zip -j $(OUTPUT_NAME)-v$(VERSION)-windows-amd64.zip $(OUTPUT_NAME)_windows_amd64.exe && \
-	zip -j $(OUTPUT_NAME)-v$(VERSION)-linux-amd64.zip $(OUTPUT_NAME)_linux_amd64
+	zip -j $(OUTPUT_NAME)-v$(VERSION)-macos-universal.zip $(OUTPUT_NAME)_macos_universal $(FONT_LICENSE) && \
+	zip -j $(OUTPUT_NAME)-v$(VERSION)-windows-amd64.zip $(OUTPUT_NAME)_windows_amd64.exe $(FONT_LICENSE) && \
+	zip -j $(OUTPUT_NAME)-v$(VERSION)-linux-amd64.zip $(OUTPUT_NAME)_linux_amd64 $(FONT_LICENSE)
+	@rm $(RELEASE_DIR)/$(FONT_LICENSE)
 	@echo "\n✅ All packages created successfully in './$(RELEASE_DIR)' directory."
 
 # --- Dependency Management ---

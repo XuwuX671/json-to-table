@@ -108,6 +108,10 @@ To build the project from source, you need Go and `make` installed. The build pr
 *   `--font-size <number>`: Font size for the PNG output. Default is 12.
 *   `--version`: Print version information and exit.
 
+## **Acknowledgements**
+
+This tool uses the **Mplus 1 Code** font, which is licensed under the SIL Open Font License, Version 1.1. We are grateful to the M+ FONTS Project for providing this excellent font.
+
 ## **License**
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
