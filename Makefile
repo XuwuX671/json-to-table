@@ -73,9 +73,9 @@ package: build
 	@cp $(FONT_LICENSE) $(DIST_DIR)/macos/
 	@cp $(FONT_LICENSE) $(DIST_DIR)/windows/
 	@cp $(FONT_LICENSE) $(DIST_DIR)/linux/
-	@cd $(DIST_DIR)/macos && zip ../$(OUTPUT_NAME)-v$(VERSION)-macos-universal.zip ./*
-	@cd $(DIST_DIR)/windows && zip ../$(OUTPUT_NAME)-v$(VERSION)-windows-amd64.zip ./*
-	@cd $(DIST_DIR)/linux && zip ../$(OUTPUT_NAME)-v$(VERSION)-linux-amd64.zip ./*
+	@cd $(DIST_DIR)/macos && zip ../$(OUTPUT_NAME)-$(VERSION)-macos-universal.zip ./*
+	@cd $(DIST_DIR)/windows && zip ../$(OUTPUT_NAME)-$(VERSION)-windows-amd64.zip ./*
+	@cd $(DIST_DIR)/linux && zip ../$(OUTPUT_NAME)-$(VERSION)-linux-amd64.zip ./*
 	@echo "\n✅ All packages created successfully in './$(DIST_DIR)' directory."
 
 # --- Dependency Management ---
