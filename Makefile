@@ -14,6 +14,7 @@ FONT_LICENSE := FONTS_LICENSE
 
 # Go parameters
 GO := go
+GOBIN := $(shell go env GOBIN)
 LDFLAGS := -ldflags="-X main.version=$(VERSION)"
 GO_BUILD := $(GO) build $(LDFLAGS)
 GO_MOD_TIDY := $(GO) mod tidy
@@ -85,12 +86,12 @@ package: build
 vulncheck:
 	@echo "🔍 Running vulnerability checks..."
 	@$(GO) vet ./...
-	@govulncheck ./...
+	@$(GOBIN)govulncheck ./...
 	@echo "   > Vulnerability checks complete."
 
 lint:
 	@echo "🧹 Running lint checks..."
-	@golangci-lint run ./...
+	@$(GOBIN)golangci-lint run ./...
 	@echo "   > Lint checks complete."
 
 # --- Dependency Management ---

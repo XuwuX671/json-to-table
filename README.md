@@ -99,13 +99,13 @@ To build the project from source, you need Go and `make` installed.
     ```bash
     make build
     ```
-    The compiled binaries will be placed in the `release` directory.
+    The compiled binaries will be placed in the `dist` directory.
 
 3.  **Create release packages (ZIP):**
     ```bash
     make package
     ```
-    This will create ZIP archives for each OS in the `release` directory, ready for a GitHub release.
+    This will create ZIP archives for each OS in the `dist` directory, ready for a GitHub release.
 
 ## **Flags**
 

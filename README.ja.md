@@ -74,13 +74,13 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
     ```bash
     make build
     ```
-    コンパイルされたバイナリは`release`ディレクトリに配置されます。
+    コンパイルされたバイナリは`dist`ディレクトリに配置されます。
 
 3.  **リリース用パッケージ（ZIP）の作成:**  
     ```bash
     make package
     ```
-    各OS向けのZIPアーカイブが`release`ディレクトリに作成され、GitHubリリースにそのまま添付できます。
+    各OS向けのZIPアーカイブが`dist`ディレクトリに作成され、GitHubリリースにそのまま添付できます。
 
 ## **フラグ一覧**
 
