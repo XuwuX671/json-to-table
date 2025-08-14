@@ -61,6 +61,11 @@ Use the `--format` flag to change the output format.
     splunk-cli run ... | jq .results | json-to-table --format html -o report.html
     ```
 
+*   **Output as Slack Block Kit JSON:**
+    ```bash
+    splunk-cli run ... | jq .results | json-to-table --format slack-block-kit
+    ```
+
 ### **Specifying Column Order (`--columns` or `-c`)**
 
 Specify column names in a comma-separated list. Wildcards allow for flexible ordering.

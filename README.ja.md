@@ -61,6 +61,11 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
   splunk-cli run ... | jq .results | json-to-table --format html -o report.html
   ```
 
+* **Slack Block Kit形式で出力:**
+  ```bash
+  splunk-cli run ... | jq .results | json-to-table --format slack-block-kit
+  ```
+
 ## **ソースからのビルド**
 
 ソースからビルドするには、Goと`make`がインストールされている必要があります。
