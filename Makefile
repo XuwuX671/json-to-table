@@ -5,7 +5,7 @@
 VERSION := $(shell git describe --tags --abbrev=0 --match "v[0-9]*" 2>/dev/null || echo "0.0.0-dev")
 VERSION_CLEAN := $(patsubst v%,%,$(VERSION))
 
-SOURCE_FILE := json-to-table.go
+SOURCE_FILE := . # Changed from json-to-table.go to . to build the current package
 OUTPUT_NAME := json-to-table
 DIST_DIR := dist
 MODULE_NAME := json-to-table
@@ -17,7 +17,7 @@ FONT_LICENSE := FONTS_LICENSE
 GO := go
 GOBIN := $(shell go env GOBIN)
 LDFLAGS := -ldflags="-X main.version=$(VERSION)"
-GO_BUILD := $(GO) build $(LDFLAGS)
+GO_BUILD := $(GO) build $(LDFLAGS) # SOURCE_FILE will be appended by the build commands
 GO_MOD_TIDY := $(GO) mod tidy
 
 # Build targets
