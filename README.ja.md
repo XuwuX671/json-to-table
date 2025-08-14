@@ -85,7 +85,7 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
 
 ## **フラグ一覧**
 
-* `--format`: 出力形式 (text, md, png, html, slack-block-kit)。デフォルトはtext。  
+* `--format`: 出力形式 (text, md, png, html, slack-block-kit, blocks)。デフォルトはtext。  
 * `-o <file>`: 出力先のファイルパス。デフォルトは標準出力。  
 * `--columns, -c <order>`: カラムの表示順序をカンマ区切りで指定。  
 * `--title <text>`: PNG出力時のタイトル。  

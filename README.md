@@ -110,7 +110,7 @@ To build the project from source, you need Go and `make` installed.
 
 ## **Flags**
 
-*   `--format`: Output format (`text`, `md`, `png`, `html`, `slack-block-kit`). Default is `text`.
+*   `--format`: Output format (`text`, `md`, `png`, `html`, `slack-block-kit`, `blocks`). Default is `text`.
 *   `-o <file>`: Output file path. Default is standard output.
 *   `--columns, -c <order>`: Comma-separated list of columns in the desired order.
 *   `--title <text>`: Title for the PNG output.
