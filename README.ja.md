@@ -17,7 +17,8 @@
   * text: ターミナル表示に適した、罫線付きのプレーンテキスト形式。  
   * md: GitHub Flavored Markdown形式のテーブル。  
   * png: **日本語対応の画像形式**。レポートやチャットでの共有に最適です。  
-  * html: 基本的なスタイルが適用された自己完結型のHTMLファイル。
+  * *   html: 基本的なスタイルが適用された自己完結型のHTMLファイル。
+*   slack-block-kit: SlackのBlock Kit形式のJSON出力。Slackメッセージで直接利用するのに最適です。
 * **柔軟なカラム順序指定**:  
   * --columns (-c) フラグで、表示するカラムとその順序を自由に指定できます。  
   * *（残りすべて）やprefix*（前方一致）といった強力なワイルドカードをサポートします。  
@@ -84,7 +85,7 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
 
 ## **フラグ一覧**
 
-* `--format`: 出力形式 (text, md, png, html)。デフォルトはtext。  
+* `--format`: 出力形式 (text, md, png, html, slack-block-kit)。デフォルトはtext。  
 * `-o <file>`: 出力先のファイルパス。デフォルトは標準出力。  
 * `--columns, -c <order>`: カラムの表示順序をカンマ区切りで指定。  
 * `--title <text>`: PNG出力時のタイトル。  

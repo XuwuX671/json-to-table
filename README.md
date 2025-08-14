@@ -18,6 +18,7 @@ For a detailed list of changes, please see the [CHANGELOG](CHANGELOG.md).
     *   `md`: GitHub Flavored Markdown table.
     *   `png`: **Image format with Japanese font support**, perfect for sharing in reports or chat.
     *   `html`: Self-contained HTML file with basic styling.
+*   `slack-block-kit`: JSON output formatted for Slack Block Kit, ideal for direct use in Slack messages.
 *   **Flexible Column Ordering**:
     *   Specify the columns to display and their order using the `--columns` (`-c`) flag.
     *   Supports powerful wildcards like `*` (for all remaining columns) and `prefix*` (for prefix matching).
@@ -109,7 +110,7 @@ To build the project from source, you need Go and `make` installed.
 
 ## **Flags**
 
-*   `--format`: Output format (`text`, `md`, `png`, `html`). Default is `text`.
+*   `--format`: Output format (`text`, `md`, `png`, `html`, `slack-block-kit`). Default is `text`.
 *   `-o <file>`: Output file path. Default is standard output.
 *   `--columns, -c <order>`: Comma-separated list of columns in the desired order.
 *   `--title <text>`: Title for the PNG output.
