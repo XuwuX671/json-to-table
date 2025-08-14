@@ -12,20 +12,21 @@
 
 ### **主な機能**
 
-* **汎用的な入力**: 標準入力から、オブジェクトのJSON配列を受け取ります。  
-* **多彩な出力形式**:  
-  * text: ターミナル表示に適した、罫線付きのプレーンテキスト形式。  
-  * md: GitHub Flavored Markdown形式のテーブル。  
-  * png: **日本語対応の画像形式**。レポートやチャットでの共有に最適です。  
-  * *   html: 基本的なスタイルが適用された自己完結型のHTMLファイル。
-*   slack-block-kit: SlackのBlock Kit形式のJSON出力。Slackメッセージで直接利用するのに最適です。
-* **柔軟なカラム順序指定**:  
-  * --columns (-c) フラグで、表示するカラムとその順序を自由に指定できます。  
-  * *（残りすべて）やprefix*（前方一致）といった強力なワイルドカードをサポートします。  
-* **画像カスタマイズ**:  
-  * --titleで画像にタイトルを追加できます。  
-  * --font-sizeで文字の大きさを調整できます。  
-* **自己完結型**: 日本語フォントをバイナリに埋め込んでいるため、外部ファイルへの依存がなく、単一の実行可能ファイルとして動作します。
+*   **汎用的な入力**: 標準入力から、オブジェクトのJSON配列を受け取ります。
+*   **多彩な出力形式**:
+    *   `text`: ターミナル表示に適した、罫線付きのプレーンテキスト形式。
+    *   `md`: GitHub Flavored Markdown形式のテーブル。
+    *   `png`: **日本語対応の画像形式**。レポートやチャットでの共有に最適です。
+    *   `html`: 基本的なスタイルが適用された自己完結型のHTMLファイル。
+    *   `slack-block-kit`: SlackのBlock Kit形式のJSON出力。Slackメッセージで直接利用するのに最適です。
+*   **柔軟なカラムの選択と順序付け**:
+    *   **カラムの包含**: `--columns` (`-c`) フラグで、表示するカラムとその順序を自由に指定できます。
+    *   **カラムの除外**: `--exclude-columns` (`-e`) フラグで、出力から除外するカラムを指定できます。
+    *   包含と除外の両方で、`*`（残りすべて）や`prefix*`（前方一致）といった強力なワイルドカードをサポートします。
+*   **画像カスタマイズ**:
+    *   `--title`で画像にタイトルを追加できます。
+    *   `--font-size`で文字の大きさを調整できます。
+*   **自己完結型**: 日本語フォントをバイナリに埋め込んでいるため、外部ファイルへの依存がなく、単一の実行可能ファイルとして動作します。
 
 ## **インストール**
 
@@ -38,33 +39,91 @@ macOS、Windows、Linux向けのコンパイル済みバイナリは[リリー�
 splunk-cliの出力をjqで絞り込み、その結果をjson-to-tableに渡すのが基本的な使い方です。
 
 ```bash
-# splunk-cliの結果をテキスト形式のテーブルで表示  
+# splunk-cliの結果をテキスト形式のテーブルで表示
 splunk-cli run --silent -spl "..." | jq .results | json-to-table
 ```
 
 ### **出力形式の指定**
 
---formatフラグで出力形式を変更できます。
+`--format`フラグで出力形式を変更できます。
 
-* **Markdown形式でファイルに出力:**  
-  ```bash
-  splunk-cli run ... | jq .results | json-to-table --format md -o report.md
-  ```
+*   **Markdown形式でファイルに出力:**
+    ```bash
+    splunk-cli run ... | jq .results | json-to-table --format md -o report.md
+    ```
 
-* **PNG画像形式でファイルに出力:**  
-  ```bash
-  splunk-cli run ... | jq .results | json-to-table --format png --title "DNS Query Ranking" -o report.png
-  ```
+*   **PNG画像形式でファイルに出力:**
+    ```bash
+    splunk-cli run ... | jq .results | json-to-table --format png --title "DNS Query Ranking" -o report.png
+    ```
 
-* **HTML形式でファイルに出力:**  
-  ```bash
-  splunk-cli run ... | jq .results | json-to-table --format html -o report.html
-  ```
+*   **HTML形式でファイルに出力:**
+    ```bash
+    splunk-cli run ... | jq .results | json-to-table --format html -o report.html
+    ```
 
-* **Slack Block Kit形式で出力:**
-  ```bash
-  splunk-cli run ... | jq .results | json-to-table --format slack-block-kit
-  ```
+*   **Slack Block Kit形式で出力:**
+    ```bash
+    splunk-cli run ... | jq .results | json-to-table --format slack-block-kit
+    ```
+
+### **カラムの選択と順序付け**
+
+`json-to-table`は、カラムの選択を2つの段階で処理します。まず除外、次いで包含です。
+
+#### **1. カラムの除外 (`--exclude-columns` または `-e`)**
+
+利用可能なカラムの初期セットから削除するカラム名またはパターンを指定します。ワイルドカードは`--columns`と同様に動作します。
+
+*   **特定のカラムを除外:**
+    ```bash
+    ... | json-to-table -e "id,timestamp"
+    ```
+    （出力から`id`と`timestamp`を除外します。）
+
+*   **プレフィックスでカラムを除外:**
+    ```bash
+    ... | json-to-table -e "http_*,_internal*"
+    ```
+    （`http_`または`_internal`で始まるすべてのカラムを除外します。）
+
+*   **すべてのカラムを除外（注意して使用してください。空のテーブルになります）:**
+    ```bash
+    ... | json-to-table -e "*"
+    ```
+
+#### **2. カラムの包含と順序付け (`--columns` または `-c`)**
+
+除外が適用された後、このフラグを使用して、*残りの*カラムのうちどれを表示するか、そしてその順序を指定します。ワイルドカードは柔軟な順序付けを可能にします。
+
+*   **特定のカラムを先頭に、残りをその後に表示:**
+    ```bash
+    ... | json-to-table -c "user,*"
+    ```
+
+*   **特定のカラムを先頭と末尾に配置:**
+    ```bash
+    ... | json-to-table -c "user,*,count,total"
+    ```
+
+*   **プレフィックスでカラムをグループ化:**
+    `http_`で始まるすべてのカラムをまとめて表示します。
+    ```bash
+    ... | json-to-table -c "user,http_*,*"
+    ```
+
+*   **定義された順序で特定のカラムセットのみを表示:**
+    ```bash
+    ... | json-to-table -c "user,action,status"
+    ```
+
+#### **組み合わせた使用例**
+
+最初に`_internal_id`と`timestamp`を除外し、次に`user`、`action`、および残りのすべてのカラムを表示する場合：
+
+```bash
+... | json-to-table -e "_internal_id,timestamp" -c "user,action,*"
+```
 
 ## **ソースからのビルド**
 
@@ -82,7 +141,7 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
     ```
     コンパイルされたバイナリは`dist`ディレクトリに配置されます。
 
-3.  **リリース用パッケージ（ZIP）の作成:**  
+3.  **リリース用パッケージ（ZIP）の作成:**
     ```bash
     make package
     ```
@@ -90,12 +149,13 @@ splunk-cli run --silent -spl "..." | jq .results | json-to-table
 
 ## **フラグ一覧**
 
-* `--format`: 出力形式 (text, md, png, html, slack-block-kit, blocks)。デフォルトはtext。  
-* `-o <file>`: 出力先のファイルパス。デフォルトは標準出力。  
-* `--columns, -c <order>`: カラムの表示順序をカンマ区切りで指定。  
-* `--title <text>`: PNG出力時のタイトル。  
-* `--font-size <number>`: PNG出力時のフォントサイズ。デフォルトは12。
-* `--version`: バージョン情報を表示して終了します。
+*   `--format`: 出力形式 (`text`, `md`, `png`, `html`, `slack-block-kit`, `blocks`)。デフォルトは`text`。
+*   `-o <file>`: 出力先のファイルパス。デフォルトは標準出力。
+*   `--columns, -c <order>`: 包含するカラムと希望する順序をカンマ区切りで指定。`*`は残りのカラムのワイルドカードとして使用。
+*   `--exclude-columns, -e <order>`: 除外するカラムをカンマ区切りで指定。`*`はワイルドカードとして使用。
+*   `--title <text>`: PNG出力時のタイトル。
+*   `--font-size <number>`: PNG出力時のフォントサイズ。デフォルトは12。
+*   `--version`: バージョン情報を表示して終了します。
 
 ## **謝辞**
 

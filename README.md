@@ -18,10 +18,11 @@ For a detailed list of changes, please see the [CHANGELOG](CHANGELOG.md).
     *   `md`: GitHub Flavored Markdown table.
     *   `png`: **Image format with Japanese font support**, perfect for sharing in reports or chat.
     *   `html`: Self-contained HTML file with basic styling.
-*   `slack-block-kit`: JSON output formatted for Slack Block Kit, ideal for direct use in Slack messages.
-*   **Flexible Column Ordering**:
-    *   Specify the columns to display and their order using the `--columns` (`-c`) flag.
-    *   Supports powerful wildcards like `*` (for all remaining columns) and `prefix*` (for prefix matching).
+    *   `slack-block-kit`: JSON output formatted for Slack Block Kit, ideal for direct use in Slack messages.
+*   **Flexible Column Selection and Ordering**:
+    *   **Include Columns**: Specify the columns to display and their order using the `--columns` (`-c`) flag.
+    *   **Exclude Columns**: Specify columns to exclude from the output using the `--exclude-columns` (`-e`) flag.
+    *   Supports powerful wildcards like `*` (for all remaining columns) and `prefix*` (for prefix matching) for both inclusion and exclusion.
 *   **Image Customization**:
     *   Add a title to the image with `--title`.
     *   Adjust the font size with `--font-size`.
@@ -66,9 +67,34 @@ Use the `--format` flag to change the output format.
     splunk-cli run ... | jq .results | json-to-table --format slack-block-kit
     ```
 
-### **Specifying Column Order (`--columns` or `-c`)**
+### **Column Selection and Ordering**
 
-Specify column names in a comma-separated list. Wildcards allow for flexible ordering.
+`json-to-table` processes column selection in two stages: first exclusion, then inclusion.
+
+#### **1. Excluding Columns (`--exclude-columns` or `-e`)**
+
+Specify column names or patterns to remove from the initial set of available columns. Wildcards behave similarly to `--columns`.
+
+*   **Exclude specific columns:**
+    ```bash
+    ... | json-to-table -e "id,timestamp"
+    ```
+    (Excludes `id` and `timestamp` from the output.)
+
+*   **Exclude columns by prefix:**
+    ```bash
+    ... | json-to-table -e "http_*,_internal*"
+    ```
+    (Excludes all columns starting with `http_` or `_internal`.)
+
+*   **Exclude all columns (use with caution, results in empty table):**
+    ```bash
+    ... | json-to-table -e "*"
+    ```
+
+#### **2. Including and Ordering Columns (`--columns` or `-c`)**
+
+After any exclusions are applied, use this flag to specify which of the *remaining* columns to display and in what order. Wildcards allow for flexible ordering.
 
 *   **Bring specific columns to the front, with the rest following:**
     ```bash
@@ -91,45 +117,9 @@ Specify column names in a comma-separated list. Wildcards allow for flexible ord
     ... | json-to-table -c "user,action,status"
     ```
 
-## **Building from Source**
+#### **Combined Usage Example**
 
-To build the project from source, you need Go and `make` installed.
+To exclude `_internal_id` and `timestamp` first, then display `user`, `action`, and all other remaining columns:
 
-1.  **Clone the repository:**
-    ```bash
-    git clone https://github.com/magifd2/json-to-table.git
-    cd json-to-table
-    ```
-
-2.  **Build the binaries:**
-    ```bash
-    make build
-    ```
-    The compiled binaries will be placed in the `dist` directory.
-
-3.  **Create release packages (ZIP):**
-    ```bash
-    make package
-    ```
-    This will create ZIP archives for each OS in the `dist` directory, ready for a GitHub release.
-
-## **Flags**
-
-*   `--format`: Output format (`text`, `md`, `png`, `html`, `slack-block-kit`, `blocks`). Default is `text`.
-*   `-o <file>`: Output file path. Default is standard output.
-*   `--columns, -c <order>`: Comma-separated list of columns in the desired order.
-*   `--title <text>`: Title for the PNG output.
-*   `--font-size <number>`: Font size for the PNG output. Default is 12.
-*   `--version`: Print version information and exit.
-
-## **Acknowledgements**
-
-This tool uses the **Mplus 1 Code** font, which is licensed under the SIL Open Font License, Version 1.1. We are grateful to the M+ FONTS Project for providing this excellent font.
-
-## **License**
-
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
-
-## **Author**
-
-[magifd2](https://github.com/magifd2)
+```bash
+... | json-to-table -e "_internal_id,timestamp" -c "user,action,*

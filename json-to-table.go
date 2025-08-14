@@ -32,11 +32,97 @@ var htmlTemplateContent string
 // Version is set at build time using ldflags
 var version = "dev"
 
-// --- Core Logic ---
+// matchHeaders applies patterns to a list of headers.
+// If isExclusion is true, it returns headers NOT matching the patterns.
+// If isExclusion is false, it returns headers matching the patterns, in the order specified by patterns.
+func matchHeaders(availableHeaders []string, patterns string, isExclusion bool) []string {
+	if patterns == "" {
+		if isExclusion {
+			return availableHeaders // No patterns to exclude, return all
+		}
+		return []string{} // No patterns to include, return empty
+	}
+
+	userPatterns := strings.Split(patterns, ",")
+	matched := make(map[string]bool)
+	resultOrder := []string{} // To maintain order for inclusion
+
+	// Create a map for quick lookup of available headers
+	availableHeadersMap := make(map[string]bool)
+	for _, h := range availableHeaders {
+		availableHeadersMap[h] = true
+	}
+
+	for _, pattern := range userPatterns {
+		trimmedPattern := strings.TrimSpace(pattern)
+
+		if trimmedPattern == "*" {
+			// Handle wildcard for remaining headers
+			// For inclusion: add all remaining available headers
+			// For exclusion: mark all remaining available headers as matched (to be excluded)
+			for _, header := range availableHeaders {
+				if availableHeadersMap[header] && !matched[header] { // Only consider headers not yet processed by explicit patterns
+					if isExclusion {
+						matched[header] = true
+					} else {
+						resultOrder = append(resultOrder, header)
+						matched[header] = true
+					}
+				}
+			}
+		} else if strings.HasSuffix(trimmedPattern, "*") {
+			// Prefix wildcard (e.g., "col*")
+			prefix := strings.TrimSuffix(trimmedPattern, "*")
+			var currentMatches []string
+			for _, header := range availableHeaders {
+				if strings.HasPrefix(header, prefix) && availableHeadersMap[header] {
+					currentMatches = append(currentMatches, header)
+				}
+			}
+			sort.Strings(currentMatches) // Sort prefix matches for deterministic behavior
+
+			for _, header := range currentMatches {
+				if !matched[header] {
+					if isExclusion {
+						matched[header] = true
+					} else {
+						resultOrder = append(resultOrder, header)
+						matched[header] = true
+					}
+				}
+			}
+		} else {
+			// Specific column name
+			if availableHeadersMap[trimmedPattern] && !matched[trimmedPattern] {
+				if isExclusion {
+					matched[trimmedPattern] = true
+				} else {
+					resultOrder = append(resultOrder, trimmedPattern)
+					matched[trimmedPattern] = true
+				}
+			}
+		}
+	}
+
+	if isExclusion {
+		// For exclusion, return headers that were NOT matched
+		finalHeaders := []string{}
+		for _, header := range availableHeaders {
+			if !matched[header] {
+				finalHeaders = append(finalHeaders, header)
+			}
+		}
+		return finalHeaders
+	} else {
+		// For inclusion, return headers that were matched, in order
+		return resultOrder
+	}
+}
+
 
 // parseJSON reads JSON from an io.Reader and converts it into a table structure,
 // respecting the user-defined column order with advanced wildcards.
-func parseJSON(r io.Reader, columnOrder string) ([][]string, error) {
+func parseJSON(r io.Reader, columnOrder string, excludeColumnOrder string) ([][]string, error) {
 	var data []map[string]interface{}
 	decoder := json.NewDecoder(r)
 	if err := decoder.Decode(&data); err != nil {
@@ -58,69 +144,22 @@ func parseJSON(r io.Reader, columnOrder string) ([][]string, error) {
 	for h := range allHeadersSet {
 		allHeadersList = append(allHeadersList, h)
 	}
-	sort.Strings(allHeadersList)
+	sort.Strings(allHeadersList) // Ensure initial list is sorted
+
+	// 2. Apply exclusion patterns first
+	headersAfterExclusion := matchHeaders(allHeadersList, excludeColumnOrder, true)
 
 	var finalHeaders []string
 	if columnOrder == "" {
-		// Default behavior: use all headers sorted alphabetically.
-		finalHeaders = allHeadersList
+		// Default behavior: use all headers remaining after exclusion, sorted alphabetically.
+		sort.Strings(headersAfterExclusion) // Ensure sorted after exclusion
+		finalHeaders = headersAfterExclusion
 	} else {
-		// Custom order logic with wildcards
-		userPatterns := strings.Split(columnOrder, ",")
-		usedHeaders := make(map[string]bool)
-
-		for _, pattern := range userPatterns {
-			trimmedPattern := strings.TrimSpace(pattern)
-
-			if trimmedPattern == "*" {
-				// Wildcard for all remaining columns
-				futureExplicitHeaders := make(map[string]bool)
-				wildcardFound := false
-				for _, p := range userPatterns {
-					p = strings.TrimSpace(p)
-					if p == "*" {
-						wildcardFound = true
-						continue
-					}
-					if wildcardFound && !strings.HasSuffix(p, "*") {
-						futureExplicitHeaders[p] = true
-					}
-				}
-
-				var remainingHeaders []string
-				for _, header := range allHeadersList {
-					if !usedHeaders[header] && !futureExplicitHeaders[header] {
-						remainingHeaders = append(remainingHeaders, header)
-					}
-				}
-				finalHeaders = append(finalHeaders, remainingHeaders...)
-				for _, h := range remainingHeaders {
-					usedHeaders[h] = true
-				}
-			} else if strings.HasSuffix(trimmedPattern, "*") {
-				// Prefix wildcard (e.g., "col*")
-				prefix := strings.TrimSuffix(trimmedPattern, "*")
-				var matchedHeaders []string
-				for _, header := range allHeadersList {
-					if strings.HasPrefix(header, prefix) && !usedHeaders[header] {
-						matchedHeaders = append(matchedHeaders, header)
-					}
-				}
-				finalHeaders = append(finalHeaders, matchedHeaders...)
-				for _, h := range matchedHeaders {
-					usedHeaders[h] = true
-				}
-			} else {
-				// Specific column name
-				if allHeadersSet[trimmedPattern] && !usedHeaders[trimmedPattern] {
-					finalHeaders = append(finalHeaders, trimmedPattern)
-					usedHeaders[trimmedPattern] = true
-				}
-			}
-		}
+		// Apply inclusion patterns to the headers remaining after exclusion
+		finalHeaders = matchHeaders(headersAfterExclusion, columnOrder, false)
 	}
 
-	// 2. Create the table data structure (headers + rows) using the final header order.
+	// 3. Create the table data structure (headers + rows) using the final header order.
 	table := make([][]string, len(data)+1)
 	table[0] = finalHeaders
 	for i, rowMap := range data {
@@ -146,7 +185,7 @@ func renderAsText(table [][]string) (string, error) {
 		return "", nil
 	}
 	
-colWidths := make([]int, len(table[0]))
+	colWidths := make([]int, len(table[0]))
 	for _, row := range table {
 		for i, cell := range row {
 			width := 0
@@ -476,6 +515,8 @@ func main() {
 	fontSize := flag.Float64("font-size", 12, "Font size for the image output")
 	columns := flag.String("columns", "", "Comma-separated list of columns in desired order. Use '*' as a wildcard for other columns.")
 	flag.StringVar(columns, "c", "", "Shorthand for --columns")
+	excludeColumns := flag.String("exclude-columns", "", "Comma-separated list of columns to exclude. Use '*' as a wildcard.")
+	flag.StringVar(excludeColumns, "e", "", "Shorthand for --exclude-columns")
 	versionFlag := flag.Bool("version", false, "Print version information and exit")
 
 	flag.Parse()
@@ -494,7 +535,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	table, err := parseJSON(os.Stdin, *columns)
+	table, err := parseJSON(os.Stdin, *columns, *excludeColumns)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error parsing JSON: %+v\n", err)
 		os.Exit(1)
