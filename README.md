@@ -43,6 +43,14 @@ The primary use case is to filter the output of `splunk-cli` with `jq` and pipe 
 splunk-cli run --silent -spl "..." | jq .results | json-to-table
 ```
 
+### **Sample Data Usage**
+
+You can use the provided `testdata/test_data.json` for quick testing:
+
+```bash
+cat testdata/test_data.json | json-to-table
+```
+
 ### **Specifying Output Format**
 
 Use the `--format` flag to change the output format.
@@ -122,4 +130,49 @@ After any exclusions are applied, use this flag to specify which of the *remaini
 To exclude `_internal_id` and `timestamp` first, then display `user`, `action`, and all other remaining columns:
 
 ```bash
-... | json-to-table -e "_internal_id,timestamp" -c "user,action,*
+... | json-to-table -e "_internal_id,timestamp" -c "user,action,*"
+```
+
+## **Building from Source**
+
+To build the project from source, you need Go and `make` installed.
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/magifd2/json-to-table.git
+    cd json-to-table
+    ```
+
+2.  **Build the binaries:**
+    ```bash
+    make build
+    ```
+    The compiled binaries will be placed in the `dist` directory.
+
+3.  **Create release packages (ZIP):**
+    ```bash
+    make package
+    ```
+    This will create ZIP archives for each OS in the `dist` directory, ready for a GitHub release.
+
+## **Flags**
+
+*   `--format`: Output format (`text`, `md`, `png`, `html`, `slack-block-kit`, `blocks`). Default is `text`.
+*   `-o <file>`: Output file path. Default is standard output.
+*   `--columns, -c <order>`: Comma-separated list of columns to include and their desired order. Use `*` as a wildcard for other columns.
+*   `--exclude-columns, -e <order>`: Comma-separated list of columns to exclude. Use `*` as a wildcard.
+*   `--title <text>`: Title for the PNG output.
+*   `--font-size <number>`: Font size for the PNG output. Default is 12.
+*   `--version`: Print version information and exit.
+
+## **Acknowledgements**
+
+This tool uses the **Mplus 1 Code** font, which is licensed under the SIL Open Font License, Version 1.1. We are grateful to the M+ FONTS Project for providing this excellent font.
+
+## **License**
+
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+
+## **Author**
+
+[magifd2](https://github.com/magifd2)

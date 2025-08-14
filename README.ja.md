@@ -43,6 +43,14 @@ splunk-cliの出力をjqで絞り込み、その結果をjson-to-tableに渡す�
 splunk-cli run --silent -spl "..." | jq .results | json-to-table
 ```
 
+### **サンプルデータでの使用**
+
+テスト用に提供されている`testdata/test_data.json`を以下のように使用できます：
+
+```bash
+cat testdata/test_data.json | json-to-table
+```
+
 ### **出力形式の指定**
 
 `--format`フラグで出力形式を変更できます。
