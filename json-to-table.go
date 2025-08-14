@@ -470,7 +470,7 @@ func renderAsSlackBlockKit(table [][]string) ([]byte, error) {
 // --- Main Execution ---
 
 func main() {
-	format := flag.String("format", "text", "Output format: text, md, png, html")
+	format := flag.String("format", "text", "Output format: text, md, png, html, slack-block-kit")
 	output := flag.String("o", "", "Output file path (default: stdout)")
 	title := flag.String("title", "", "Title for the image output")
 	fontSize := flag.Float64("font-size", 12, "Font size for the image output")
